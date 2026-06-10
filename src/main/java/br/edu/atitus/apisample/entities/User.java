@@ -1,13 +1,25 @@
 package br.edu.atitus.apisample.entities;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name = "tb_user")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(length = 255, nullable = false)
     private String name;
+    @Column(length = 255, nullable = false, unique = true)
     private String email;
+    @Column(length = 100, nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     private UserType type;
 
     public UUID getId() {
