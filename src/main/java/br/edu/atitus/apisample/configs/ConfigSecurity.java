@@ -3,12 +3,15 @@ package br.edu.atitus.apisample.configs;
 import br.edu.atitus.apisample.components.AuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class ConfigSecurity {
@@ -19,6 +22,7 @@ public class ConfigSecurity {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers("/ws**", "/ws/**").authenticated()
                         .anyRequest().permitAll())
                 .addFilterBefore(filterToken, UsernamePasswordAuthenticationFilter.class);
@@ -30,4 +34,17 @@ public class ConfigSecurity {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .allowedOrigins("*");
+            }
+
+        };
+    }
 }
